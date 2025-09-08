@@ -66,7 +66,6 @@ const AddClient = ({ setOpen, open, currentId, setCurrentId }) => {
   // eslint-disable-next-line 
   const [openSnackbar, closeSnackbar] = useSnackbar()
 
-
   useEffect(() => {
     if (client) {
       setClientData(client)

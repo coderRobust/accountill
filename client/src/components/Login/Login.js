@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import Field from './Field'
 import useStyles from './styles'
 import styles from './Login.module.css'
@@ -44,7 +44,6 @@ const Login = () => {
         }
         setLoading(true)
     }
-
 
     const switchMode =() => {
         setIsSignup((prevState) => !prevState)

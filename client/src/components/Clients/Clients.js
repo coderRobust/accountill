@@ -129,87 +129,80 @@ const Clients = ({ setOpen, setCurrentId, clients }) => {
     setPage(0);
   };
 
-
   const handleEdit = (selectedInvoice) => {
-    
     setOpen((prevState) => !prevState)
     setCurrentId(selectedInvoice)
-
   }
 
-
   const tableStyle = { width: 160, fontSize: 14, cursor: 'pointer', borderBottom: 'none',  padding: '8px', textAlign: 'center' }
-const headerStyle = { borderBottom: 'none', textAlign: 'center'}
-
+  const headerStyle = { borderBottom: 'none', textAlign: 'center'}
 
   return (
     <div className={styles.pageLayout}>
-    <Container style={{width: '85%'}}>
+      <Container style={{width: '85%'}}>
         <TableContainer component={Paper} elevation={0}>
-      <Table className={classes.table} aria-label="custom pagination table">
+          <Table className={classes.table} aria-label="custom pagination table">
+            <TableHead>
+              <TableRow>
+                <TableCell style={{...headerStyle, width: '10px'}}>No</TableCell>
+                <TableCell style={headerStyle}>Name</TableCell>
+                <TableCell style={headerStyle}>Email</TableCell>
+                <TableCell style={headerStyle}>Phone</TableCell>
+                <TableCell style={headerStyle}>Edit</TableCell>
+                <TableCell style={headerStyle}>Delete</TableCell>
+                
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {(rowsPerPage > 0
+                ? rows?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                : rows
+              ).map((row, index) => (
+                <TableRow key={row._id} styel={{cursor: 'pointer'}} >
+                  <TableCell style={{...tableStyle, width: '10px'}}>{index + 1}</TableCell>
+                  <TableCell  style={tableStyle} scope="row" > <Button style={{textTransform: 'none'}}  > {row.name} </Button></TableCell>
+                  <TableCell style={tableStyle}>{row.email}</TableCell>
+                  <TableCell style={tableStyle}>{row.phone}</TableCell>
+                  <TableCell style={{...tableStyle, width: '10px'}}>
+                      <IconButton onClick={() => handleEdit(row._id)}>
+                        <BorderColorIcon style={{width: '20px', height: '20px'}} />
+                      </IconButton>
+                  </TableCell>
+                  <TableCell style={{...tableStyle, width: '10px'}}>
+                      <IconButton onClick={() => dispatch(deleteClient(row._id, openSnackbar))}>
+                        <DeleteOutlineRoundedIcon style={{width: '20px', height: '20px'}} />
+                      </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
 
-      <TableHead>
-          <TableRow>
-            <TableCell style={{...headerStyle, width: '10px'}}>Number</TableCell>
-            <TableCell style={headerStyle}>Name</TableCell>
-            <TableCell style={headerStyle}>Email</TableCell>
-            <TableCell style={headerStyle}>Phone</TableCell>
-            <TableCell style={headerStyle}>Edit</TableCell>
-            <TableCell style={headerStyle}>Delete</TableCell>
-            
-          </TableRow>
-        </TableHead>
-
-        <TableBody>
-          {(rowsPerPage > 0
-            ? rows?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            : rows
-          ).map((row, index) => (
-            <TableRow key={row._id} styel={{cursor: 'pointer'}} >
-              <TableCell style={{...tableStyle, width: '10px'}}>{index + 1}</TableCell>
-              <TableCell  style={tableStyle} scope="row" > <Button style={{textTransform: 'none'}}  > {row.name} </Button></TableCell>
-              <TableCell style={tableStyle}>{row.email}</TableCell>
-              <TableCell style={tableStyle}>{row.phone}</TableCell>
-              <TableCell style={{...tableStyle, width: '10px'}}>
-                  <IconButton onClick={() => handleEdit(row._id)}>
-                    <BorderColorIcon style={{width: '20px', height: '20px'}} />
-                  </IconButton>
-              </TableCell>
-              <TableCell style={{...tableStyle, width: '10px'}}>
-                  <IconButton onClick={() => dispatch(deleteClient(row._id, openSnackbar))}>
-                    <DeleteOutlineRoundedIcon style={{width: '20px', height: '20px'}} />
-                  </IconButton>
-              </TableCell>
-            </TableRow>
-          ))}
-
-          {emptyRows > 0 && (
-            <TableRow style={{ height: 53 * emptyRows }}>
-              <TableCell colSpan={6} />
-            </TableRow>
-          )}
-        </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-              colSpan={6}
-              count={rows.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              SelectProps={{
-                inputProps: { 'aria-label': 'rows per page' },
-                native: true,
-              }}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-              ActionsComponent={TablePaginationActions}
-            />
-          </TableRow>
-        </TableFooter>
-      </Table>
-    </TableContainer>
-    </Container>
+              {emptyRows > 0 && (
+                <TableRow style={{ height: 53 * emptyRows }}>
+                  <TableCell colSpan={6} />
+                </TableRow>
+              )}
+            </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TablePagination
+                  rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                  colSpan={6}
+                  count={rows.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  SelectProps={{
+                    inputProps: { 'aria-label': 'rows per page' },
+                    native: true,
+                  }}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                  ActionsComponent={TablePaginationActions}
+                />
+              </TableRow>
+            </TableFooter>
+          </Table>
+        </TableContainer>
+      </Container>
     </div>
   );
 }

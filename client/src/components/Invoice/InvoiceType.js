@@ -43,7 +43,12 @@ const InvoiceType = ({ type, setType }) => {
     <div>
       <p style={{marginBottom: '-10px', paddingTop: '10px', color: 'gray'}}>Select type</p>
       <Button style={{lineSpacing: 1, fontSize: 35, fontWeight: 700}} onClick={handleClickOpen}>{type? type : 'Invoice'}</Button>
-      <Dialog disableBackdropClick disableEscapeKeyDown open={open} onClose={handleClose}>
+      <Dialog open={open} onClose={(event, reason) => {
+        if (reason === 'backdropClick' || reason === 'escapeKeyDown') {
+          return;
+        }
+        handleClose();
+      }}>
         {/* <DialogTitle>Fill the form</DialogTitle> */}
         <DialogContent>
           <div className={classes.container}>

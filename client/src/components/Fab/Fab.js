@@ -19,7 +19,7 @@ const FabButton = () => {
 
     return (
         <div>
-           <AddClient setOpen={setOpen} open={open} />
+          <AddClient setOpen={setOpen} open={open} />
           <Fab
             mainButtonStyles={mainButtonStyles}
             icon={ <AddIcon />}

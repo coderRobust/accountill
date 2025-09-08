@@ -1,6 +1,6 @@
 import { FETCH_PROFILES, CREATE_PROFILE, FETCH_PROFILES_BY_USER, UPDATE_PROFILE, DELETE_PROFILE, FETCH_PROFILE_BY_USER, START_LOADING, END_LOADING, FETCH_PROFILE } from '../actions/constants';
 
-const profilesReducer = (state = { isLoading: true, profiles: [] }, action) => {
+const profilesReducer = (state = { isLoading: true, profiles: {} }, action) => {
   switch (action.type) {
     case START_LOADING:
       return {...state, isLoading: true }
@@ -21,9 +21,9 @@ const profilesReducer = (state = { isLoading: true, profiles: [] }, action) => {
       return {...state, profile: action.payload }
     
     case CREATE_PROFILE:
-      return {...state, profiles: [...state.profiles, action.payload]}
+      return {...state, profiles: {...action.payload}}
     case UPDATE_PROFILE:
-      return {...state, profiles: state.profiles.map((profile) => (profile._id === action.payload._id ? action.payload : profile))}
+      return {...state, profiles: {...action.payload}}
     case DELETE_PROFILE:
       return {...state, profiles: state.profiles.filter((profile) => profile._id !== action.payload)}
     default:

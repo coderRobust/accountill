@@ -32,7 +32,7 @@ const ClientList = () => {
 //     },[location]
 // )
 
-useEffect(() => {
+  useEffect(() => {
     dispatch(getClientsByUser({ search: user?.result?._id || user.result.googleId }));
   },[location, dispatch])
 
@@ -40,7 +40,6 @@ useEffect(() => {
     history.push('/login')
   }
 
-  
   if(isLoading) {
     return  <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', paddingTop: '20px'}}>
         <Spinner />
@@ -50,28 +49,27 @@ useEffect(() => {
   if(clients.length === 0) {
     return  <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', paddingTop: '20px', margin: '80px'}}>
       <NoData />
-    <p style={{padding: '40px', color: 'gray', textAlign: 'center'}}>No customers yet. Click the plus icon to add customer</p>
-  
+      <p style={{padding: '40px', color: 'gray', textAlign: 'center'}}>No customers yet. Click the plus icon to add customer</p>
     </div>
   }
 
-    return (
-        <div>
-            <AddClient 
-                open={open} 
-                setOpen={setOpen}
-                currentId={currentId}
-                setCurrentId={setCurrentId}
-            />
-            <Clients 
-                open={open} 
-                setOpen={setOpen}
-                currentId={currentId}
-                setCurrentId={setCurrentId}
-                clients={clients}
-            />
-        </div>
-    )
+  return (
+    <div>
+      <AddClient 
+          open={open} 
+          setOpen={setOpen}
+          currentId={currentId}
+          setCurrentId={setCurrentId}
+      />
+      <Clients 
+          open={open} 
+          setOpen={setOpen}
+          currentId={currentId}
+          setCurrentId={setCurrentId}
+          clients={clients}
+      />
+    </div>
+  )
 }
 
 export default ClientList

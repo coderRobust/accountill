@@ -60,31 +60,30 @@ const DialogActions = withStyles((theme) => ({
 
 const AddClient = ({ setOpen, open }) => {
 
-    const location = useLocation()
-    const [clientData, setClientData] = useState({ name: '', email: '', phone: '', address: '', userId: [] })
-    const dispatch = useDispatch()
-    const user = JSON.parse(localStorage.getItem('profile'))
-       // eslint-disable-next-line 
-       const [openSnackbar, closeSnackbar] = useSnackbar()
+  const location = useLocation()
+  const [clientData, setClientData] = useState({ name: '', email: '', phone: '', address: '', userId: [] })
+  const dispatch = useDispatch()
+  const user = JSON.parse(localStorage.getItem('profile'))
+      // eslint-disable-next-line 
+  const [openSnackbar, closeSnackbar] = useSnackbar()
 
-
-    useEffect(() => {
-      var checkId = user?.result?._id
-      if(checkId !== undefined) {
-        setClientData({...clientData, userId: [checkId]})
-      } else {
-        setClientData({...clientData, userId: [user?.result?.googleId]})
-      }
-    },[location])
-   
-
-    const handleSubmitClient =(e)=> {
-        e.preventDefault()
-          dispatch(createClient(clientData, openSnackbar))
-        
-        clear()
-        handleClose()
+  useEffect(() => {
+    var checkId = user?.result?._id
+    if(checkId !== undefined) {
+      setClientData({...clientData, userId: [checkId]})
+    } else {
+      setClientData({...clientData, userId: [user?.result?.googleId]})
     }
+  },[location])
+  
+
+  const handleSubmitClient =(e)=> {
+      e.preventDefault()
+        dispatch(createClient(clientData, openSnackbar))
+      
+      clear()
+      handleClose()
+  }
 
   const clear =() => {
     setClientData({ name: '', email: '', phone: '', address: '', userId: [] })
@@ -96,21 +95,21 @@ const AddClient = ({ setOpen, open }) => {
 
 
   const inputStyle = {
-      display: "block",
-      padding: "1.4rem 0.75rem",
-      width: "100%",
-      fontSize: "0.8rem",
-      lineHeight: 1.25,
-      color: "#55595c",
-      backgroundColor: "#fff",
-      backgroundImage: "none",
-      backgroundClip: "padding-box",
-      borderTop: "0",
-      borderRight: "0",
-      borderBottom: "1px solid #eee",
-      borderLeft: "0",
-      borderRadius: "3px",
-      transition: "all 0.25s cubic-bezier(0.4, 0, 1, 1)"
+    display: "block",
+    padding: "1.4rem 0.75rem",
+    width: "100%",
+    fontSize: "0.8rem",
+    lineHeight: 1.25,
+    color: "#55595c",
+    backgroundColor: "#fff",
+    backgroundImage: "none",
+    backgroundClip: "padding-box",
+    borderTop: "0",
+    borderRight: "0",
+    borderBottom: "1px solid #eee",
+    borderLeft: "0",
+    borderRadius: "3px",
+    transition: "all 0.25s cubic-bezier(0.4, 0, 1, 1)"
   }
 
   const focus = {
@@ -120,14 +119,12 @@ const AddClient = ({ setOpen, open }) => {
 
   return (
     <div>
-        <div>
-      <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open} fullWidth>
-            <DialogTitle id="customized-dialog-title" onClose={handleClose} style={{paddingLeft: '20px', color: 'white'}}>
-                New Customer
-            </DialogTitle>
-            <DialogContent dividers>
-           
-
+      <div>
+        <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open} fullWidth>
+          <DialogTitle id="customized-dialog-title" onClose={handleClose} style={{paddingLeft: '20px', color: 'white'}}>
+              New Customer
+          </DialogTitle>
+          <DialogContent dividers>
           <div className="customInputs">
               <input 
                 placeholder="Name" 
@@ -163,15 +160,14 @@ const AddClient = ({ setOpen, open }) => {
                 value={clientData.address} 
               />
           </div>
-
-            </DialogContent>
-            <DialogActions>
-            <Button autoFocus onClick={handleSubmitClient} variant="contained" style={{marginRight: '25px'}} >
-                Save Customer
-            </Button>
-            </DialogActions>
-      </Dialog>
-        </div>
+          </DialogContent>
+          <DialogActions>
+          <Button autoFocus onClick={handleSubmitClient} variant="contained" style={{marginRight: '25px'}} >
+              Save Customer
+          </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
     </div>
   );
 }

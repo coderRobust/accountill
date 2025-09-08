@@ -23,7 +23,7 @@ export const getProfiles = () => async (dispatch) => {
 
   } catch (error) {
     console.log(error);
-  } };
+  }};
 
 
 export const getProfilesByUser =(searchQuery) => async (dispatch) => {
@@ -59,7 +59,6 @@ export const createProfile = (profile, history) => async (dispatch) => {
     // dispatch({ type: START_LOADING })
     const { data } = await api.createProfile(profile);
     // history.push(`/profiles/${data._id}`)
-
     dispatch({ type: CREATE_PROFILE, payload: data });
     // dispatch({ type: END_LOADING })
   } catch (error) {

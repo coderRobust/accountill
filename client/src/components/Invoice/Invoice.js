@@ -81,12 +81,10 @@ const Invoice = () => {
     const history = useHistory()
     const user = JSON.parse(localStorage.getItem('profile'))
 
-
     useEffect(() => {
         getTotalCount()
          // eslint-disable-next-line
     },[location])
-
 
     const getTotalCount = async() => {
         try {
@@ -97,13 +95,11 @@ const Invoice = () => {
         } catch (error) {
           console.error(error);
         }
-      }
-      
-
-
+    }    
 
     useEffect(() => {
-        dispatch(getInvoice(id));
+        if(id)
+            dispatch(getInvoice(id));
         // eslint-disable-next-line
       }, [id]);
 
@@ -150,8 +146,10 @@ const Invoice = () => {
     };
 
   const handleRates =(e) => {
-    setRates(e.target.value)
-    setInvoiceData((prevState) => ({...prevState, tax: e.target.value}))
+    const raw = e.target.value;
+    const value = parseFloat(raw) || 0;
+    setRates(value)
+    setInvoiceData((prevState) => ({...prevState, vat: value}))
   }
 
     // console.log(invoiceData)
@@ -160,12 +158,11 @@ const Invoice = () => {
         const values = [...invoiceData.items]
         values[index][e.target.name] = e.target.value
         setInvoiceData({...invoiceData, items: values})
-        
     }
 
     useEffect(() => {
             //Get the subtotal
-            const subTotal =()=> {
+        const subTotal =()=> {
             var arr = document.getElementsByName("amount");
             var subtotal = 0;
             for(var i = 0; i < arr.length; i++) {
@@ -178,6 +175,8 @@ const Invoice = () => {
         }
 
         subTotal()
+
+        console.log({invoiceData})
        
     }, [invoiceData])
 
@@ -186,9 +185,9 @@ const Invoice = () => {
         const total =() => {
             
             //Tax rate is calculated as (input / 100 ) * subtotal + subtotal 
-            const overallSum = rates /100 * subTotal + subTotal
+            const overallSum = Math.round( (rates * subTotal /100 + subTotal)* 100) / 100;
             //VAT is calculated as tax rates /100 * subtotal
-            setVat(rates /100 * subTotal)
+            setVat(rates * subTotal /100 );
             setTotal(overallSum)
 
 
@@ -209,47 +208,44 @@ const Invoice = () => {
         // console.log(values)
     }
     
-
-    console.log(invoiceData)
-
     const handleSubmit =  async (e ) => {
         e.preventDefault()
         if(invoice) {
-         dispatch(updateInvoice( invoice._id, {
-             ...invoiceData, 
-             subTotal: subTotal, 
-             total: total, 
-             vat: vat, 
-             rates: rates, 
-             currency: currency, 
-             dueDate: selectedDate, 
-             client, 
-             type: type, 
-             status: status 
+            dispatch(updateInvoice( invoice._id, {
+                ...invoiceData, 
+                subTotal: subTotal, 
+                total: total, 
+                vat: vat, 
+                rates: rates, 
+                currency: currency, 
+                dueDate: selectedDate, 
+                client, 
+                type: type, 
+                status: status 
             })) 
-         history.push(`/invoice/${invoice._id}`)
-        } else {
-
-        dispatch(createInvoice({
-            ...invoiceData, 
-            subTotal: subTotal, 
-            total: total, 
-            vat: vat, 
-            rates: rates, 
-            currency: currency, 
-            dueDate: selectedDate, 
-            invoiceNumber: `${
-                invoiceData.invoiceNumber < 100 ? 
-                (Number(invoiceData.invoiceNumber)).toString().padStart(3, '0') 
-                : Number(invoiceData.invoiceNumber)
-            }`,
-            client, 
-            type: type, 
-            status: status, 
-            paymentRecords: [], 
-            creator: [user?.result?._id || user?.result?.googleId] }, 
-            history
-            ))
+            history.push(`/invoice/${invoice._id}`)
+        } 
+        else {
+            dispatch(createInvoice({
+                ...invoiceData, 
+                subTotal: subTotal, 
+                total: total, 
+                vat: vat, 
+                rates: rates, 
+                currency: currency, 
+                dueDate: selectedDate, 
+                invoiceNumber: `${
+                    invoiceData.invoiceNumber < 100 ? 
+                    (Number(invoiceData.invoiceNumber)).toString().padStart(3, '0') 
+                    : Number(invoiceData.invoiceNumber)
+                }`,
+                client, 
+                type: type, 
+                status: status, 
+                paymentRecords: [], 
+                creator: [user?.result?._id || user?.result?.googleId] }, 
+                history
+                ))
         }
 
         // setInvoiceData(initialState)
@@ -272,34 +268,20 @@ const Invoice = () => {
     <div className={styles.invoiceLayout}>
         <form onSubmit={handleSubmit} className="mu-form">
             <AddClient setOpen={setOpen} open={open} />
-            <Container  className={classes.headerContainer}>
-                
+            <Container  className={classes.headerContainer}>                
                 <Grid container justifyContent="space-between" >
-                    <Grid item>
-                        {/* <Avatar alt="Logo" variant='square' src="" className={classes.large} /> */}
-                    </Grid>
+                    <Grid item />
                     <Grid item>
                         <InvoiceType type={type} setType={setType} />
-                        Invoice #:
-                        <div style={{
-                            marginTop: '15px',
-                            width: '100px',
-                            padding: '8px',
-                            display: 'inline-block',
-                            backgroundColor: '#f4f4f4',
-                            outline: '0px solid transparent'
-                        }} 
-                            contenteditable="true"
-                            onInput={e => setInvoiceData({
-                            ...invoiceData, invoiceNumber: e.currentTarget.textContent})
-                            }
-                        >
-                        <span style={{width:'40px',
-                            color: 'black',
-                            padding: '15px',
-                        }} 
-                            contenteditable="false"> {invoiceData.invoiceNumber}</span>
-                        <br/>
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }} >
+                            <span>Invoice #:</span>
+                            <TextField
+                                variant='outlined'
+                                size='small'
+                                value={invoiceData.invoiceNumber}
+                                onChange={(e) => setInvoiceData({...invoiceData, invoiceNumber: e.target.value})}
+                                inputProps={{ style: { width: 100, background: '#f4f4f4', padding: 8, textAlign: 'center' } }}
+                                />
                         </div>
                     </Grid>
                 </Grid >
@@ -309,9 +291,7 @@ const Invoice = () => {
                 <Grid container justifyContent="space-between" style={{marginTop: '40px'}} >
                     <Grid item style={{width: '50%'}}>
                         <Container>
-                            <Typography variant="overline" style={{color: 'gray', paddingRight: '3px'}} gutterBottom>Bill to</Typography>
-                            
-
+                            <Typography variant="overline" style={{color: 'gray', paddingRight: '3px'}} gutterBottom>Bill to</Typography>                        
                             {client  && (
                                 <>
                                     <Typography variant="subtitle2" gutterBottom>{client.name}</Typography>
@@ -323,18 +303,17 @@ const Invoice = () => {
                             )}
                             <div style={client? {display: 'none'} :  {display: 'block'}}>
                                 <Autocomplete
-                                            {...clientsProps}
-                                            PaperComponent={CustomPaper}
-                                                renderInput={(params) => <TextField {...params}
-                                                required={!invoice && true} 
-                                                label="Select Customer" 
-                                                margin="normal" 
-                                                variant="outlined"
-                                                />}
-                                            value={clients?.name}
-                                            onChange={(event, value) => setClient(value)}
-                                            
-                                    />
+                                    {...clientsProps}
+                                    PaperComponent={CustomPaper}
+                                    renderInput={(params) => <TextField {...params}
+                                    required={!invoice && true} 
+                                    label="Select Customer" 
+                                    margin="normal" 
+                                    variant="outlined"
+                                    />}
+                                    value={clients?.name}
+                                    onChange={(event, value) => setClient(value)}                                    
+                                />
 
                             </div>
                             {!client && 
@@ -371,29 +350,28 @@ const Invoice = () => {
         <TableContainer component={Paper} className="tb-container">
         <Table className={classes.table} aria-label="simple table">
             <TableHead>
-            <TableRow>
-                <TableCell>Item</TableCell>
-                <TableCell >Qty</TableCell>
-                <TableCell>Price</TableCell>
-                <TableCell >Disc(%)</TableCell>
-                <TableCell >Amount</TableCell>
-                <TableCell >Action</TableCell>
-            </TableRow>
+                <TableRow>
+                    <TableCell>Item</TableCell>
+                    <TableCell >Qty</TableCell>
+                    <TableCell>Price</TableCell>
+                    <TableCell >Disc(%)</TableCell>
+                    <TableCell >Amount</TableCell>
+                    <TableCell >Action</TableCell>
+                </TableRow>
             </TableHead>
             <TableBody>
             {invoiceData.items.map((itemField, index) => (
                 <TableRow key={index}>
-                <TableCell  scope="row" style={{width: '40%' }}> <InputBase style={{width: '100%'}} outline="none" sx={{ ml: 1, flex: 1 }} type="text" name="itemName" onChange={e => handleChange(index, e)} value={itemField.itemName} placeholder="Item name or description" /> </TableCell>
-                <TableCell align="right"> <InputBase sx={{ ml: 1, flex: 1 }} type="number" name="quantity" onChange={e => handleChange(index, e)} value={itemField.quantity} placeholder="0" /> </TableCell>
-                <TableCell align="right"> <InputBase sx={{ ml: 1, flex: 1 }} type="number" name="unitPrice" onChange={e => handleChange(index, e)} value={itemField.unitPrice} placeholder="0" /> </TableCell>
-                <TableCell align="right"> <InputBase sx={{ ml: 1, flex: 1 }} type="number" name="discount"  onChange={e => handleChange(index, e)} value={itemField.discount} placeholder="0" /> </TableCell>
-                <TableCell align="right"> <InputBase sx={{ ml: 1, flex: 1 }} type="number" name="amount" onChange={e => handleChange(index, e)}  value={(itemField.quantity * itemField.unitPrice) - (itemField.quantity * itemField.unitPrice) * itemField.discount / 100} disabled /> </TableCell>
-                <TableCell align="right"> 
-                    <IconButton onClick={() =>handleRemoveField(index)}>
-                        <DeleteOutlineRoundedIcon style={{width: '20px', height: '20px'}}/>
-                    </IconButton>
-                </TableCell>
-                
+                    <TableCell scope="row" style={{width: '40%' }}> <InputBase style={{width: '100%'}} outline="none" sx={{ ml: 1, flex: 1 }} type="text" name="itemName" onChange={e => handleChange(index, e)} value={itemField.itemName} placeholder="Item name or description" /> </TableCell>
+                    <TableCell align="right"> <InputBase sx={{ ml: 1, flex: 1 }} type="number" name="quantity" onChange={e => handleChange(index, e)} value={itemField.quantity} placeholder="0" /> </TableCell>
+                    <TableCell align="right"> <InputBase sx={{ ml: 1, flex: 1 }} type="number" name="unitPrice" onChange={e => handleChange(index, e)} value={itemField.unitPrice} placeholder="0" /> </TableCell>
+                    <TableCell align="right"> <InputBase sx={{ ml: 1, flex: 1 }} type="number" name="discount"  onChange={e => handleChange(index, e)} value={itemField.discount} placeholder="0" /> </TableCell>
+                    <TableCell align="right"> <InputBase sx={{ ml: 1, flex: 1 }} type="number" name="amount" onChange={e => handleChange(index, e)}  value={(itemField.quantity * itemField.unitPrice) - (itemField.quantity * itemField.unitPrice) * itemField.discount / 100} disabled /> </TableCell>
+                    <TableCell align="right"> 
+                        <IconButton onClick={() =>handleRemoveField(index)}>
+                            <DeleteOutlineRoundedIcon style={{width: '20px', height: '20px'}}/>
+                        </IconButton>
+                    </TableCell>                
                 </TableRow>
             ))}
             </TableBody>
@@ -427,10 +405,10 @@ const Invoice = () => {
                 <Grid container >
                     <Grid item style={{marginTop: '16px', marginRight: 10}}>
                         <TextField 
-                            type="text" 
-                            step="any" 
+                            type="text"
                             name="rates" 
-                            id="rates" 
+                            id="rates"  
+                            step = "any"
                             value={rates} 
                             onChange={handleRates} 
                             placeholder="e.g 10" 
