@@ -67,7 +67,7 @@ export const createInvoice = async (req, res) => {
 
 export const getInvoice = async (req, res) => { 
     const { id } = req.params;
-
+    console.log({id})
     try {
         const invoice = await InvoiceModel.findById(id);
         

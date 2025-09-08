@@ -39,7 +39,6 @@ export const createProfile = async (req, res) => {
     userId,
    } = req.body;
   
-  
   const newProfile = new ProfileModel({
     name,
     email,
@@ -56,11 +55,10 @@ export const createProfile = async (req, res) => {
     const existingUser = await ProfileModel.findOne({ email })
 
     if(existingUser) return res.status(404).json({ message: "Profile already exist" })
-      await newProfile.save();
-
-      res.status(201).json(newProfile );
+    await newProfile.save();
+    return res.status(200).json(newProfile);
   } catch (error) {
-      res.status(409).json({ message: error.message });
+    return res.status(409).json({ message: error.message });
   }
 }
 
@@ -72,8 +70,7 @@ export const getProfilesByUser = async (req, res) => {
   try {
       // const email = new RegExp(searchQuery, "i");
 
-      const profile = await ProfileModel.findOne({ userId: searchQuery });
-
+      const profile = await ProfileModel.findOne({ email: searchQuery });
       res.json({ data: profile });
   } catch (error) {    
       res.status(404).json({ message: error.message });
