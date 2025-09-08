@@ -1,19 +1,18 @@
-FROM node:14-alpine AS builder
-ENV NODE_ENV production
+FROM node:20-alpine AS builder
+ENV NODE_ENV = production
 
 WORKDIR /app
 
 COPY client/package.json .
-COPY client/yarn.lock .
-RUN yarn install --production
+RUN yarn install --frozen-lockfile --production=false
 
 COPY client .
 
 RUN npm run build
 
 
-FROM nginx:1.21.0-alpine as production
-ENV NODE_ENV production
+FROM nginx:1.27-alpine AS production
+ENV NODE_ENV = production
 
 COPY --from=builder /app/build /usr/share/nginx/html
 

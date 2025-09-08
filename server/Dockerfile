@@ -1,14 +1,16 @@
-FROM node:14-alpine AS builder
-ENV NODE_ENV production
-
-RUN mkdir -p /usr/src/app
+FROM node:20-alpine AS deps
 WORKDIR /usr/src/app
 
 COPY server/package.json .
 RUN npm install
+
+FROM node:20-alpine AS app
+ENV NODE_ENV=production
+WORKDIR /usr/src/app
+
+COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY server/ .
 
-RUN npm install && npm install nodemon --save-dev
 
 EXPOSE 5000
-CMD ["yarn", "start-prod"]
+CMD ["yarn", "start"]
