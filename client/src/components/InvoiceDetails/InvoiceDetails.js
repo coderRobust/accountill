@@ -119,7 +119,8 @@ const InvoiceDetails = () => {
   const createAndDownloadPdf = () => {
     setDownloadStatus('loading')
     axios.post(`${process.env.REACT_APP_API}/create-pdf`, 
-    { name: invoice.client.name,
+    {
+      name: invoice.client.name,
       address: invoice.client.address,
       phone: invoice.client.phone,
       email: invoice.client.email,
@@ -136,13 +137,13 @@ const InvoiceDetails = () => {
       totalAmountReceived: toCommas(totalAmountReceived),
       balanceDue: toCommas(total - totalAmountReceived),
       company: company,
-  })
-      .then(() => axios.get(`${process.env.REACT_APP_API}/fetch-pdf`, { responseType: 'blob' }))
-      .then((res) => {
+    })
+    .then(() => axios.get(`${process.env.REACT_APP_API}/fetch-pdf`, { responseType: 'blob' }))
+    .then((res) => {
         const pdfBlob = new Blob([res.data], { type: 'application/pdf' });
 
         saveAs(pdfBlob, 'invoice.pdf')
-      }).then(() =>  setDownloadStatus('success'))
+    }).then(() =>  setDownloadStatus('success'))
   }
 
 
@@ -151,7 +152,8 @@ const InvoiceDetails = () => {
     e.preventDefault()
     setSendStatus('loading')
     axios.post(`${process.env.REACT_APP_API}/send-pdf`, 
-    { name: invoice.client.name,
+    { 
+      name: invoice.client.name,
       address: invoice.client.address,
       phone: invoice.client.phone,
       email: invoice.client.email,
@@ -169,13 +171,13 @@ const InvoiceDetails = () => {
       balanceDue: toCommas(total - totalAmountReceived),
       link: `${process.env.REACT_APP_URL}/invoice/${invoice._id}`,
       company: company,
-  })
-  // .then(() => console.log("invoice sent successfully"))
-  .then(() => setSendStatus('success'))
-      .catch((error) => {
-        console.log(error)
-        setSendStatus('error')
-      })
+    })
+    // .then(() => console.log("invoice sent successfully"))
+    .then(() => setSendStatus('success'))
+    .catch((error) => {
+      console.log(error)
+      setSendStatus('error')
+    })
   }
 
 
