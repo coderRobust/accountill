@@ -52,29 +52,35 @@ var options = { format: 'A4' };
 //SEND PDF INVOICE VIA EMAIL
 app.post('/send-pdf', (req, res) => {
     const { email, company } = req.body
-
+    try{
     // pdf.create(pdfTemplate(req.body), {}).toFile('invoice.pdf', (err) => {
-    pdf.create(pdfTemplate(req.body), options).toFile('invoice.pdf', (err) => {
-       
-          // send mail with defined transport object
-        transporter.sendMail({
-            from: ` Accountill <hello@accountill.com>`, // sender address
-            to: `${email}`, // list of receivers
-            replyTo: `${company.email}`,
-            subject: `Invoice from ${company.businessName ? company.businessName : company.name}`, // Subject line
-            text: `Invoice from ${company.businessName ? company.businessName : company.name }`, // plain text body
-            html: emailTemplate(req.body), // html body
-            attachments: [{
-                filename: 'invoice.pdf',
-                path: `${__dirname}/invoice.pdf`
-            }]
+        pdf.create(pdfTemplate(req.body), options).toFile('invoice.pdf', (err, result) => {
+        
+            // send mail with defined transport object
+            transporter.sendMail({
+                from: ` Accountill <hello@accountill.com>`, // sender address
+                to: `${email}`, // list of receivers
+                replyTo: `${company?.email}`,
+                subject: `Invoice from ${company.businessName ? company.businessName : company.name}`, // Subject line
+                text: `Invoice from ${company.businessName ? company.businessName : company.name }`, // plain text body
+                html: emailTemplate(req.body), // html body
+                attachments: [{
+                    filename: 'invoice.pdf',
+                    path: `${__dirname}/invoice.pdf`
+                }]
+            });
+            if(err) {
+                console.log(err)
+                return res.status(500).json({ ok: false, message: 'PDF generation failed' });
+            }
+            return res.status(200).json({
+                ok: true,
+                filename: result?.filename || 'invoice.pdf',
+            });
         });
-
-        if(err) {
-            res.send(Promise.reject());
-        }
-        res.send(Promise.resolve());
-    });
+    } catch(error) {
+        return res.status(500).json({ ok: false, message: 'Unexpected error', error: String(error) });
+    }
 });
 
 
@@ -85,12 +91,21 @@ app.post('/send-pdf', (req, res) => {
 
 //CREATE AND SEND PDF INVOICE
 app.post('/create-pdf', (req, res) => {
-    pdf.create(pdfTemplate(req.body), {}).toFile('invoice.pdf', (err) => {
-        if(err) {
-            res.send(Promise.reject());
-        }
-        res.send(Promise.resolve());
-    });
+    try{
+        const html = pdfTemplate(req.body);
+        pdf.create(html, {}).toFile('invoice.pdf', (err, result) => {
+            if(err) {
+                console.log(err)
+                return res.status(500).json({ ok: false, message: 'PDF generation failed' });
+            }
+            return res.status(200).json({
+                ok: true,
+                filename: result?.filename || 'invoice.pdf',
+            });
+        });
+    } catch(error) {
+        return res.status(500).json({ ok: false, message: 'Unexpected error', error: String(error) });
+    }
 });
 
 //SEND PDF INVOICE
