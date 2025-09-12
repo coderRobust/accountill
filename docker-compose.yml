@@ -5,6 +5,8 @@ services:
       context: .
       dockerfile: ./client/Dockerfile
       target: production
+      args:
+        REACT_APP_GOOGLE_CLIENT_ID: "632974279988-p8ui6tg3201kgmr6p0q17dtoq1fqt0s1.apps.googleusercontent.com"
     ports:
       - '80:80'
     depends_on:

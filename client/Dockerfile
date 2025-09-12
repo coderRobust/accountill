@@ -6,6 +6,8 @@ WORKDIR /app
 COPY client/package.json .
 RUN yarn install --frozen-lockfile --production=false
 
+ARG REACT_APP_GOOGLE_CLIENT_ID
+ENV REACT_APP_GOOGLE_CLIENT_ID=${REACT_APP_GOOGLE_CLIENT_ID} 
 COPY client .
 
 RUN npm run build
